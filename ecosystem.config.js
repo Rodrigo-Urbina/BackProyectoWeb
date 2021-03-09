@@ -5,10 +5,10 @@ module.exports = {
     //   watch: './proxy'
     // }, 
     {
-      name: 'strapi',
-      script: 'npm',
-      cwd: './strapi/',
-      args: 'run develop'
+      name: 'express-server',
+      script: 'node',
+      cwd: './node-app/',
+      args: 'server.js'
     }
   ],
 
