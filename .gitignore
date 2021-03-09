@@ -39,6 +39,6 @@ node_modules
 *.swm
 *.out
 *.pid
-node-app/package.json
-node-app/package-lock.json
+
+
 node-app/.env
