@@ -41,3 +41,4 @@ node_modules
 *.pid
 node-app/package.json
 node-app/package-lock.json
+node-app/.env
