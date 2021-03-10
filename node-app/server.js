@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const mysql = require('mysql');
+const cors = require('cors');
 
 const PORT = 3000;
 
@@ -13,6 +14,7 @@ const app = express();
 app.use('/', bodyParser.json(), router);
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static('public'));
+app.use(cors());
 
 
 // starting the server
