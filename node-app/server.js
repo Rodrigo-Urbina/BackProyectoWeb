@@ -1,21 +1,20 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const path = require('path');
-const mysql = require('mysql');
-const cors = require('cors');
+const express = require("express");
+const bodyParser = require("body-parser");
+const path = require("path");
+const mysql = require("mysql");
+const cors = require("cors");
 
 const PORT = 3000;
 
-const router = require('./router');
+const router = require("./router");
 
 const app = express();
 
-//Middleware
-app.use('/', bodyParser.json(), router);
+//Middleware.
 app.use(express.urlencoded({ extended: false }));
-app.use(express.static('public'));
+app.use(express.static("public"));
 app.use(cors());
-
+app.use("/", bodyParser.json(), router);
 
 // starting the server
-app.listen( PORT , () => console.log(`Server started on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
