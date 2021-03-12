@@ -1,20 +1,25 @@
+// import libraries
 const express = require("express");
 const bodyParser = require("body-parser");
 const path = require("path");
 const mysql = require("mysql");
 const cors = require("cors");
-
-const PORT = 3000;
-
 const router = require("./router");
 
+// define application port
+const PORT = process.env.PORT || 3000;
+
+// initialize express server
 const app = express();
 
-//Middleware.
+// middleware for cors, json and urlencoded
+app.use(cors());
+app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static("public"));
-app.use(cors());
-app.use("/", bodyParser.json(), router);
+
+// api router
+app.use("/", router);
 
 // starting the server
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));

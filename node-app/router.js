@@ -5,6 +5,10 @@ const mysql = require("mysql");
 const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
 const bcrypt = require("bcrypt");
+const { generateToken, authenticateToken } = require("./middleware/authJWT");
+
+// initialize router
+const router = express.Router();
 
 // get config vars
 dotenv.config();
@@ -14,27 +18,10 @@ function generateAccessToken(user) {
   return jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "604800" });
 }
 
-function authenticateToken(req, res, next) {
-  // Gather the jwt access token from the request header
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) {
-    return res.sendStatus(401); // if there isn't any token
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.sendStatus(403); // Forbidden
-    req.email = decoded.email;
-    next(); // pass the execution off to whatever request the client intended
-  });
-}
-
 function userBoard(req, res) {
   res.status(200).send("User content for " + req.email);
 }
 
-const router = express.Router();
-router.use(express.urlencoded({ extended: false }));
 
 // setup database connection
 const connection = mysql.createConnection({
@@ -46,7 +33,7 @@ const connection = mysql.createConnection({
 });
 
 router.get("/", (req, res) => {
-  return res.send("Hello World");
+  return res.send("Hello World").status(200);
 });
 
 // AUTHENTICATION
@@ -101,7 +88,7 @@ router.post("/auth/signin", (req, res) => {
               role: results[0].role,
             };
             return res.send({
-              jwt: generateAccessToken(userInfo),
+              jwt: generateToken(userInfo),
               user: userInfo,
             });
           } else {
@@ -115,6 +102,6 @@ router.post("/auth/signin", (req, res) => {
   );
 });
 
-router.get("/test/user", [authenticateToken], userBoard);
+router.get("/test/user", [authenticateToken, userBoard]);
 
 module.exports = router;
