@@ -1,4 +1,4 @@
-const express = require("express");
+// import libraries
 const jwt = require("jsonwebtoken");
 
 exports.generateToken = function (tokenBody) {
@@ -9,12 +9,13 @@ exports.authenticateToken = function (req, res, next) {
   // Gather the jwt access token from the request header
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  if (token == null) return res.status(401).send("Missing token"); // if there isn't any token
+  if (token == null) return res.status(401).send("Missing token");
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
     if (err) {
+      if (err.name == 'JsonWebTokenError') return res.status(401).send("Unauthorized");
       if (err.name == 'TokenExpiredError') return res.status(401).send("JWT has expired");
-      return res.sendStatus(403); // Forbidden
+      return res.status(403).send("Forbidden");
     }
     req.email = decoded.email;
     next(); // pass the execution off to whatever request the client intended

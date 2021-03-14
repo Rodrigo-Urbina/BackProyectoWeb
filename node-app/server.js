@@ -14,9 +14,9 @@ const app = express();
 
 // middleware for cors, json and urlencoded
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(express.static("public"));
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+//app.use(express.static("public"));
 
 // api router
 app.use("/", router);
