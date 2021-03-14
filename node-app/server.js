@@ -1,8 +1,6 @@
 // import libraries
 const express = require("express");
 const bodyParser = require("body-parser");
-const path = require("path");
-const mysql = require("mysql");
 const cors = require("cors");
 const router = require("./router");
 
