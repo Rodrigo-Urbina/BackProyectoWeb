@@ -1,10 +1,6 @@
 // import libraries
 const jwt = require("jsonwebtoken");
 
-exports.generateToken = function (tokenBody) {
-  return jwt.sign(tokenBody, process.env.JWT_SECRET, { expiresIn: "604800" });
-}
-
 exports.authenticateToken = function (req, res, next) {
   // Gather the jwt access token from the request header
   const authHeader = req.headers["authorization"];
@@ -17,7 +13,7 @@ exports.authenticateToken = function (req, res, next) {
       if (err.name == 'TokenExpiredError') return res.status(401).send("JWT has expired");
       return res.status(403).send("Forbidden");
     }
-    req.email = decoded.email;
+    req.token = decoded;
     next(); // pass the execution off to whatever request the client intended
   });
 }

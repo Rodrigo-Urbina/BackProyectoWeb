@@ -3,7 +3,7 @@ const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 var db = require("../db");
-const { generateToken } = require("../middleware/authJWT");
+const { generateToken } = require("../services/authJWT");
 
 exports.create = async function(req, res) {
   db.query(
@@ -22,11 +22,49 @@ exports.create = async function(req, res) {
   );
 }
 
-exports.read = async function(req, res) {}
+exports.read = async function(req, res) {
+  db.query(
+    "SELECT * FROM users",
+    function (error, results, fields) {
+      if (error) {
+        return res.status(500).send("Internal Server Error");
+      }
+      return res.status(200).send(results);
+    }
+  );
+}
 
-exports.update = async function(req, res) {}
+exports.update = async function(req, res) {
+  if(req.body.constructor === Object && Object.keys(req.body).length === 0) {
+    return res.status(422).send("req.body is empty")
+  }
+  db.query(
+    "UPDATE users SET ? WHERE id = ?",
+    [req.body, req.params.id],
+    function (error, results, fields) {
+      if (error) {
+        return res.status(500).send("Internal Server Error");
+      }
+      return res.status(200).send("User updated succesfully");
+    }
+  )
+}
 
-exports.delete = async function(req, res) {}
+exports.delete = async function(req, res) {
+  db.query(
+    "DELETE FROM users WHERE id = ?",
+    [req.params.id],
+    function (error, results, fields) {
+      if (error) {
+        return res.status(500).send("Internal Server Error");
+      }
+      if (results.affectedRows == 0) {
+        return res.status(400).send("User not found");
+      }
+      return res.status(200).send("User deleted succesfully")
+    }
+  );
+}
 
 exports.signin = async function(req, res) {
   db.query(
@@ -44,8 +82,7 @@ exports.signin = async function(req, res) {
           if (result && user.confirmed && !user.blocked) {
             return res.status(200).send({
               jwt: generateToken({
-                email: user.email,
-                role: user.role
+                email: user.email
               })
             });
           } else {
