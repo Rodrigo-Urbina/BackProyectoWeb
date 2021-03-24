@@ -10,7 +10,9 @@ exports.create = async function(req, res) {
     "INSERT INTO users SET ?",
     {
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      name_first: req.body.firstName,
+      name_last: req.body.lastName
     },
     function (error, results, fields) {
       if (error) {
