@@ -10,14 +10,16 @@ exports.create = async function(req, res) {
     "INSERT INTO users SET ?",
     {
       email: req.body.email,
-      password: req.body.password
+      password: req.body.password,
+      name_first: req.body.firstName,
+      name_last: req.body.lastName
     },
     function (error, results, fields) {
       if (error) {
         if (error.errno == 1062) return res.status(409).send("User already exists");
         return res.status(500).send("Internal Server Error");
       }
-      return res.status(200).send("User was registered succesfully");
+      return res.status(200).send({message: "User was registered succesfully"});
     }
   );
 }
@@ -59,7 +61,7 @@ exports.delete = async function(req, res) {
         return res.status(500).send("Internal Server Error");
       }
       if (results.affectedRows == 0) {
-        return res.status(400).send("User not found");
+        return res.status(404).send("User not found");
       }
       return res.status(200).send("User deleted succesfully")
     }
