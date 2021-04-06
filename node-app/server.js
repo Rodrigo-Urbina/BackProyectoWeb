@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 3000;
 // initialize express server
 const app = express();
 
-// middleware for cors, json and urlencoded
+// middleware for cors, urlencoded and json
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());

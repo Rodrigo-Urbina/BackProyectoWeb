@@ -31,7 +31,6 @@ router.delete("/user/:id", [authenticateToken, isAdmin], (req, res) => userServi
 router.get("/test/user", [authenticateToken], (req, res) => {
   res.status(200).send("User content for " + req.token.email);
 });
-
 router.get("/test/admin", [authenticateToken, isAdmin], (req, res) => {
   res.status(200).send("User " + req.token.email + " is admin!");
 });

@@ -8,7 +8,7 @@ const { generateToken } = require("../services/authJWT");
 exports.create = async function(req, res) {
   db.query(
     "INSERT INTO users SET ?",
-    {
+    { // TODO cambiar esto para que al recibirlo deba tener esos nombres y usar body nomas
       email: req.body.email,
       password: req.body.password,
       name_first: req.body.firstName,
@@ -25,8 +25,15 @@ exports.create = async function(req, res) {
 }
 
 exports.read = async function(req, res) {
+  var sql = "SELECT * FROM users";
+
+  if (Object.keys(req.query).length != 0) { // if query is not empty
+    sql += " WHERE ?"; // add where clause for query
+  }
+
   db.query(
-    "SELECT * FROM users",
+    sql,
+    req.query, // if query is empty it won't even be used because of missing WHERE clause
     function (error, results, fields) {
       if (error) {
         return res.status(500).send("Internal Server Error");
@@ -37,8 +44,8 @@ exports.read = async function(req, res) {
 }
 
 exports.update = async function(req, res) {
-  if(req.body.constructor === Object && Object.keys(req.body).length === 0) {
-    return res.status(422).send("req.body is empty")
+  if(Object.keys(req.body).length === 0) {
+    return res.status(422).send("Request body is empty")
   }
   db.query(
     "UPDATE users SET ? WHERE id = ?",
