@@ -25,7 +25,8 @@ exports.create = async function(req, res) {
 }
 
 exports.read = async function(req, res) {
-  var sql = "SELECT * FROM users";
+  var columns = "id, email, name_first, name_last, confirmed, blocked, role, phone";
+  var sql = "SELECT " + columns + " FROM users";
 
   if (Object.keys(req.query).length != 0) { // if query is not empty
     sql += " WHERE ?"; // add where clause for query
