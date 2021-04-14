@@ -3,7 +3,7 @@ const express = require("express");
 var db = require("./db");
 const { authenticateToken } = require("./middleware/authJWT");
 const { hashPassword } = require("./middleware/passwordHash");
-const userService = require("./controllers/user");
+const userController = require("./controllers/user");
 const { isAdmin } = require('./middleware/isAdmin');
 
 // initialize router
@@ -14,24 +14,25 @@ router.get("/", (req, res) => {
 });
 
 // AUTHENTICATION
-router.post("/auth/signup", [hashPassword], (req, res) => userService.create(req, res));
-router.post("/auth/signin", (req, res) => userService.signin(req, res));
+router.post("/auth/signin", (req, res, next) => userController.signin(req, res, next));
+router.post("/auth/signup", [hashPassword], (req, res, next) => userController.create(req, res, next));
 
 // User CRUD
 // Create
-router.post("/user", [hashPassword, authenticateToken, isAdmin], (req, res) => userService.create(req, res));
+router.post("/user", [hashPassword, authenticateToken, isAdmin], (req, res, next) => userController.create(req, res, next));
 // Read
-router.get("/user", [authenticateToken, isAdmin], (req, res) => userService.read(req, res));
+router.get("/user", [authenticateToken, isAdmin], (req, res, next) => userController.find(req, res, next));
+router.get("/user/:id", [authenticateToken, isAdmin], (req, res, next) => userController.findOne(req, res, next));
 // Update
-router.put("/user/:id", [authenticateToken, isAdmin], (req, res) => userService.update(req, res));
+router.put("/user/:id", [authenticateToken, isAdmin], (req, res, next) => userController.update(req, res, next));
 // Delete
-router.delete("/user/:id", [authenticateToken, isAdmin], (req, res) => userService.delete(req, res));
+router.delete("/user/:id", [authenticateToken, isAdmin], (req, res, next) => userController.delete(req, res, next));
 
 // Testing
-router.get("/test/user", [authenticateToken], (req, res) => {
+router.get("/test/user", [authenticateToken], (req, res, next) => {
   res.status(200).send("User content for " + req.token.email);
 });
-router.get("/test/admin", [authenticateToken, isAdmin], (req, res) => {
+router.get("/test/admin", [authenticateToken, isAdmin], (req, res, next) => {
   res.status(200).send("User " + req.token.email + " is admin!");
 });
 

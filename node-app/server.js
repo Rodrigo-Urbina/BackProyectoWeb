@@ -19,5 +19,16 @@ app.use(bodyParser.json());
 // api router
 app.use("/", router);
 
+// Error handler
+app.use((err, req, res, next) => {
+  console.log('Error status: ', err.status);
+  console.log('Message: ', err.message);
+  if (err.status && err.message) {
+    res.status(err.status).send(err.message);
+  } else {
+    res.status(500).send("Internal server error");
+  }
+});
+
 // starting the server
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
