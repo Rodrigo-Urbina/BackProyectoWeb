@@ -64,7 +64,10 @@ exports.signin = async function(req, res, next) {
         if (result && user.confirmed && !user.blocked) {
           return res.status(200).send({
             jwt: generateToken({
-              email: user.email
+              email: user.email,
+              name_first: user.name_first,
+              name_last: user.name_last,
+              role: user.role
             })
           });
         } else {
