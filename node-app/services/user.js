@@ -2,7 +2,7 @@
 const userModel = require("../models/user");
 
 exports.create = async function(data, next) {
-  let {error, results, fields} = await userModel.create(req.body);
+  let {error, results, fields} = await userModel.create(data);
   if (error) {
     if (error.errno == 1062) {
       next({status: 409, message:'User already exists'});

@@ -7,7 +7,7 @@ const { generateToken } = require("../services/authJWT");
 const userService = require("../services/user");
 
 exports.create = async function(req, res, next) {
-  await userService.create(req, res, next);
+  await userService.create(req.body, next);
   res.status(200).send("User was created succesfully");
 }
 
@@ -57,7 +57,7 @@ exports.delete = async function(req, res, next) {
 
 exports.signin = async function(req, res, next) {
     req.query = {email: req.body.email};
-    let user = await userService.findOne(req, res, next);
+    let user = await userService.findOne(req.query, next);
 
     if (user) {
       bcrypt.compare(req.body.password, user.password, function (err, result) {
