@@ -10,7 +10,7 @@ exports.isAdmin = async function (req, res, next) {
       if (error || results.length == 0) {
         return res.status(500).send("Internal Server Error");
       }
-      if (results[0].role != 'admin') {
+      if (results[0].role != 1) {
         return res.status(403).send("Forbidden")
       }
       next();
