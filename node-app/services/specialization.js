@@ -36,8 +36,8 @@ exports.findOne = async function(params, next) {
   }
 }
 
-exports.update = async function(data, teacher, subject, next) {
-  let {error, results, fields} = await specializationModel.update(data, teacher, subject);
+exports.update = async function(data, teacherID, subjectID, next) {
+  let {error, results, fields} = await specializationModel.update(data, teacherID, subjectID);
 
   if (error) {
     next({status: 500, message:'Internal Server Error'});
@@ -46,12 +46,22 @@ exports.update = async function(data, teacher, subject, next) {
   return;
 }
 
-exports.delete = async function(teacher, subject, next) {
-  let {error, results, fields} = await specializationModel.delete(teacher, subject);
+exports.delete = async function(teacherID, subjectID, next) {
+  let {error, results, fields} = await specializationModel.delete(teacherID, subjectID);
 
   if (error) {
     next({status: 500, message:'Internal Server Error'});
   }
 
   return;
+}
+
+exports.findSubjects = async function(teacherID, next) {
+  let {error, results, fields} = await specializationModel.findSubjects(teacherID);
+
+  if (error) {
+    next({status: 500, message:'Internal Server Error'});
+  }
+
+  return results;
 }

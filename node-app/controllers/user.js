@@ -1,11 +1,12 @@
 // import libraries
-const mysql = require("mysql");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 var db = require("../db");
 const { generateToken } = require("../services/authJWT");
 const userService = require("../services/user");
-const teacherInfoService = require("../services/teacherInfo");
+const evaluationService = require("../services/evaluation");
+const subjectService = require("../services/subject");
+const specializationService = require("../services/specialization");
 
 exports.create = async function(req, res, next) {
   await userService.create(req.body, next);
@@ -80,7 +81,7 @@ exports.signin = async function(req, res, next) {
 }
 
 exports.findTeachers = async function(req, res, next) {
-  req.query['role'] = 'teacher';
+  req.query.role = 'teacher';
 
   let teachers = await userService.findTeachers(next);
 
@@ -89,14 +90,23 @@ exports.findTeachers = async function(req, res, next) {
 
 exports.teacherDetail = async function(req, res, next) {
 
-  //let teacher = await userService.findOne(req.params, next);
-  //let teacherInfo = await teacherInfoService.findOne({teacher: req.params.id}, next);
-
   let teacher = await userService.teacherDetail(req.params.id, next);
+  let evaluations = await evaluationService.find({teacher: req.params.id}, next);
+  let subjects = await specializationService.findSubjects(req.params.id, next);
 
+  teacher.evaluations = await Promise.all(evaluations.map(async function (evaluation) {
+    return {
+      id: evaluation.id,
+      subject: (await subjectService.findOne({id: evaluation.subject},next)).name,
+      score: evaluation.score,
+      comments: evaluation.comments,
+      datetime: evaluation.datetime
+    };
+  }));
 
-  //teacher.description = teacherInfo.description;
-  //teacher.picture = teacherInfo.picture;
+  teacher.subjects = subjects.map(function (subject) {
+    return subject.name;
+  });
 
   return res.status(200).send(teacher);
 }

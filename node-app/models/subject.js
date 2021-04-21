@@ -5,7 +5,7 @@ var db = require("../db");
 exports.create = async function(data) {
   return new Promise(result => {
     db.query(
-      "INSERT INTO teacherInfo SET ?",
+      "INSERT INTO subject SET ?",
       data,
       function (error, results, fields) {
         result({error, results, fields});
@@ -14,7 +14,7 @@ exports.create = async function(data) {
 }
 
 exports.read = async function(params) {
-  var sql = "SELECT * FROM teacherInfo";
+  var sql = "SELECT * FROM subject";
 
   if (Object.keys(params).length != 0) { // if query is not empty
     sql += " WHERE ?"; // add where clause for query
@@ -30,11 +30,11 @@ exports.read = async function(params) {
   });
 }
 
-exports.update = async function(data, teacherID) { //receives teacher ID
+exports.update = async function(data, id) {
   return new Promise(result => {
     db.query(
-      "UPDATE specialization SET ? WHERE teacher = ?",
-      [data, teacherID],
+      "UPDATE subject SET ? WHERE id = ?",
+      [data, id],
       function (error, results, fields) {
         result({error, results, fields});
       }
@@ -42,11 +42,11 @@ exports.update = async function(data, teacherID) { //receives teacher ID
   });
 }
 
-exports.delete = async function(teacherID) { //receives teacher ID
+exports.delete = async function(id) {
   return new Promise(result => {
     db.query(
-      "DELETE FROM teacherInfo WHERE teacher = ?",
-      teacherID,
+      "DELETE FROM subject WHERE id = ?",
+      id,
       function (error, results, fields) {
         result({error, results, fields});
       }

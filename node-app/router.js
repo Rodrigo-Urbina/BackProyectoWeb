@@ -4,6 +4,7 @@ var db = require("./db");
 const { authenticateToken } = require("./middleware/authJWT");
 const { hashPassword } = require("./middleware/passwordHash");
 const userController = require("./controllers/user");
+const evaluationController = require("./controllers/evaluation");
 const { isAdmin } = require('./middleware/isAdmin');
 const { isStudent } = require('./middleware/isStudent');
 
@@ -18,7 +19,7 @@ router.get("/", (req, res) => {
 router.post("/auth/signin", (req, res, next) => userController.signin(req, res, next));
 router.post("/auth/signup", [hashPassword], (req, res, next) => userController.create(req, res, next));
 
-// Users CRUD
+// User routes
 // Create
 router.post("/user", [hashPassword, authenticateToken, isAdmin], (req, res, next) => userController.create(req, res, next));
 // Read
@@ -33,6 +34,11 @@ router.get("/teacher", [authenticateToken, isStudent], (req, res, next) => userC
 // Find One Teacher
 // Find Teachers
 router.get("/teacher/:id", [authenticateToken, isStudent], (req, res, next) => userController.teacherDetail(req, res, next));
+
+
+// Evaluation routes
+// Read
+router.get("/evaluation", [authenticateToken], (req, res, next) => evaluationController.find(req, res, next));
 
 // Testing
 router.get("/test/user", [authenticateToken], (req, res, next) => {

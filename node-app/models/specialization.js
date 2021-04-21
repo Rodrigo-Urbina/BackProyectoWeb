@@ -53,3 +53,18 @@ exports.delete = async function(teacher, subject) {
     );
   });
 }
+
+exports.findSubjects = async function(teacherID) {
+  let query = `SELECT name
+               FROM subject AS sub, specialization AS spec
+               WHERE sub.id = spec.subject AND spec.teacher = ?`;
+  return new Promise(result => {
+    db.query(
+      query,
+      teacherID,
+      function (error, results, fields) {
+        result({error, results, fields});
+      }
+    );
+  });
+}
