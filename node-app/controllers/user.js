@@ -5,10 +5,12 @@ const jwt = require("jsonwebtoken");
 var db = require("../db");
 const { generateToken } = require("../services/authJWT");
 const userService = require("../services/user");
+const teacherInfoService = require("../services/teacherInfo");
 
 exports.create = async function(req, res, next) {
   await userService.create(req.body, next);
-  res.status(200).send("User was created succesfully");
+
+  return res.status(200).send("User was created succesfully");
 }
 
 exports.find = async function(req, res, next) {
@@ -44,37 +46,57 @@ exports.update = async function(req, res, next) {
 
   await userService.update(req.body, req.params.id, next);
 
-  res.status(200).send("User updated succesfully");
+  return res.status(200).send("User updated succesfully");
 }
 
 exports.delete = async function(req, res, next) {
-
   await userService.delete(req.params.id, next);
 
-  res.status(200).send("User deleted succesfully");
+  return res.status(200).send("User deleted succesfully");
 }
 
 
 exports.signin = async function(req, res, next) {
-    req.query = {email: req.body.email};
-    let user = await userService.findOne(req.query, next);
+  let user = await userService.findOne({email: req.body.email}, next);
 
-    if (user) {
-      bcrypt.compare(req.body.password, user.password, function (err, result) {
-        if (result && user.confirmed && !user.blocked) {
-          return res.status(200).send({
-            jwt: generateToken({
-              email: user.email,
-              name_first: user.name_first,
-              name_last: user.name_last,
-              role: user.role
-            })
-          });
-        } else {
-          next({status: 401, message:'Unauthorized'});
-        }
-      });
-    } else {
-      next({status: 401, message:'Unauthorized'});
-    }
+  if (user) {
+    bcrypt.compare(req.body.password, user.password, function (err, result) {
+      if (result && user.confirmed && !user.blocked) {
+        return res.status(200).send({
+          jwt: generateToken({
+            email: user.email,
+            name_first: user.name_first,
+            name_last: user.name_last,
+            role: user.role
+          })
+        });
+      } else {
+        next({status: 401, message:'Unauthorized'});
+      }
+    });
+  } else {
+    next({status: 401, message:'Unauthorized'});
+  }
+}
+
+exports.findTeachers = async function(req, res, next) {
+  req.query['role'] = 'teacher';
+
+  let teachers = await userService.findTeachers(next);
+
+  return res.status(200).send(teachers);
+}
+
+exports.teacherDetail = async function(req, res, next) {
+
+  //let teacher = await userService.findOne(req.params, next);
+  //let teacherInfo = await teacherInfoService.findOne({teacher: req.params.id}, next);
+
+  let teacher = await userService.teacherDetail(req.params.id, next);
+
+
+  //teacher.description = teacherInfo.description;
+  //teacher.picture = teacherInfo.picture;
+
+  return res.status(200).send(teacher);
 }

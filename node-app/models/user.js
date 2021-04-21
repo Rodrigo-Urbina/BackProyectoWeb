@@ -53,3 +53,50 @@ exports.delete = async function(id) {
     );
   });
 }
+
+exports.teacherDetail = async function(id) {
+  let query = `SELECT t.id, t.name_first, t.name_last, t.description, t.phone, t.picture, ratings.rating
+               FROM (
+              	 SELECT u.id, u.name_first, u.name_last, ti.description, ti.phone, ti.picture
+              	 FROM users AS u, teacherInfo AS ti
+              	 WHERE u.id = ti.teacher
+                 ) AS t
+               JOIN (
+              	 SELECT t.id AS id,  AVG(eval.score) as rating
+              	 FROM users AS t, evaluation AS eval
+              	 WHERE t.id = ?
+                 ) AS ratings
+               ON t.id = ratings.id`
+  return new Promise(result => {
+    db.query(
+      query,
+      id,
+      function (error, results, fields) {
+        result({error, results, fields});
+      }
+    );
+  });
+}
+
+exports.findTeachers = async function() {
+  let query = `SELECT teachers.id, teachers.name_first, teachers.name_last, teachers.subject, ratings.rating
+               FROM
+              	 (SELECT t.id AS id,  AVG(eval.score) as rating
+              	 FROM users AS t, evaluation AS eval
+                   WHERE t.role = 2) AS ratings
+               JOIN (
+              	 SELECT t.id as id, t.name_first as name_first, t.name_last as name_last, subject.name as subject
+              	 FROM users AS t
+              		 JOIN specialization AS spec ON t.id = spec.teacher
+              		 JOIN subject ON  subject.id = spec.subject
+              	 WHERE t.role = 2
+               ) AS teachers ON teachers.id = ratings.id`
+  return new Promise(result => {
+    db.query(
+      query,
+      function (error, results, fields) {
+        result({error, results, fields});
+      }
+    );
+  });
+}
