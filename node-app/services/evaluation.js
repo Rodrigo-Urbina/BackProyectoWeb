@@ -1,57 +1,52 @@
 // import libraries
 const evaluationModel = require("../models/evaluation");
 
-exports.create = async function(data, next) {
+exports.create = async function(data) {
   let {error, results, fields} = await evaluationModel.create(data);
   if (error) {
     if (error.errno == 1062) {
-      next({status: 409, message:'User already exists'});
+      throw {status: 409, message:'User already exists'};
     }
-    next({status: 500, message:'Internal Server Error'});
+    throw {status: 500, message:'Internal Server Error'};
   }
-  return;
 }
 
-exports.find = async function(params, next) {
+exports.find = async function(params) {
   let {error, results, fields} = await evaluationModel.read(params);
 
   if (error) {
-    next({status: 500, message:'Internal Server Error'});
+    throw {status: 500, message:'Internal Server Error'};
   }
 
   return results;
 }
 
-exports.findOne = async function(params, next) {
+exports.findOne = async function(params) {
   const {error, results, fields} = await evaluationModel.read(params);
 
   if (error) {
-    next({status: 500, message:'Internal Server Error'});
+    throw {status: 500, message:'Internal Server Error'};
   }
 
-  if (results.length > 0) {
-    return results[0];
-  } else {
-    next({status: 404, message:'User not found'});
+  if (results.length == 0) {
+    throw {status: 404, message:'User not found'};
   }
+
+  return results[0];
 }
 
-exports.update = async function(data, id, next) {
+exports.update = async function(data, id) {
   let {error, results, fields} = await evaluationModel.update(data, id);
 
   if (error) {
-    next({status: 500, message:'Internal Server Error'});
+    throw {status: 500, message:'Internal Server Error'};
   }
-
-  return;
 }
 
-exports.delete = async function(id, next) {
+exports.delete = async function(id) {
   let {error, results, fields} = await evaluationModel.delete(id);
 
   if (error) {
-    next({status: 500, message:'Internal Server Error'});
+    throw {status: 500, message:'Internal Server Error'};
   }
-
-  return;
 }

@@ -1,8 +1,8 @@
 // import libraries
-const express = require("express");
-const bodyParser = require("body-parser");
-const cors = require("cors");
-const router = require("./router");
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const router = require('./router');
 
 // define application port
 const PORT = process.env.PORT || 3000;
@@ -17,17 +17,19 @@ app.use(bodyParser.json());
 //app.use(express.static("public"));
 
 // api router
-app.use("/", router);
+app.use('/', router);
+
 
 // Error handler
 app.use((err, req, res, next) => {
-  console.log('Error status: ', err.status);
-  console.log('Message: ', err.message);
   if (err.status && err.message) {
+    console.log('Error status: ', err.status);
+    console.log('Message: ', err.message);
     res.status(err.status).send(err.message);
   } else {
-    res.status(500).send("Internal server error");
+    res.status(500).send('Internal server error');
   }
+  next();
 });
 
 // starting the server

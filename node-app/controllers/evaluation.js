@@ -1,54 +1,68 @@
 // import libraries
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 var db = require("../db");
-const { generateToken } = require("../services/authJWT");
 const evaluationService = require("../services/evaluation");
 
 exports.create = async function(req, res, next) {
-  await evaluationService.create(req.body, next);
+  try {
+    await evaluationService.create(req.body);
 
-  return res.status(200).send("Evaluation was created succesfully");
+    return res.status(200).send("Evaluation was created succesfully");
+  } catch (e) {
+    next(e);
+  }
 }
 
 exports.find = async function(req, res, next) {
-  let evaluations;
-  if (req.query) {
-    evaluations = await evaluationService.find(req.query, next);
-  } else {
-    evaluations = await evaluationService.find({}, next);
-  }
+  try {
+    let evaluations;
+    if (req.query) {
+      evaluations = await evaluationService.find(req.query);
+    } else {
+      evaluations = await evaluationService.find({});
+    }
 
-  //var columns = "id, email, name_first, name_last, confirmed, blocked, role, phone";
-  return res.status(200).send(evaluations);
+    return res.status(200).send(evaluations);
+  } catch (e) {
+    next(e);
+  }
 }
 
 exports.findOne = async function(req, res, next) {
-  let params = (req.query) ? req.query : {};
-  params.id = req.params.id;
-  let evaluation = await evaluationService.findOne(params, next);
+  try {
+    let params = (req.query) ? req.query : {};
+    params.id = req.params.id;
+    let evaluation = await evaluationService.findOne(params);
 
-  //var columns = "id, email, name_first, name_last, confirmed, blocked, role, phone";
+    if (!evaluation) {
+      throw {status: 404, message:'Evaluation not found'};
+    }
 
-  if (evaluation) {
     return res.status(200).send(evaluation);
-  } else {
-    next({status: 404, message:'Evaluation not found'});
+  } catch (e) {
+    next(e);
   }
 }
 
 exports.update = async function(req, res, next) {
-  if(Object.keys(req.body).length === 0) {
-    next({status: 422, message:'Request body is empty'});
+  try {
+    if(Object.keys(req.body).length === 0) {
+      throw {status: 422, message:'Request body is empty'};
+    }
+
+    await evaluationService.update(req.body, req.params.id);
+
+    return res.status(200).send("Evaluation updated succesfully");
+  } catch (e) {
+    next(e);
   }
-
-  await evaluationService.update(req.body, req.params.id, next);
-
-  return res.status(200).send("Evaluation updated succesfully");
 }
 
 exports.delete = async function(req, res, next) {
-  await evaluationService.delete(req.params.id, next);
+  try {
+    await evaluationService.delete(req.params.id);
 
-  return res.status(200).send("Evaluation deleted succesfully");
+    return res.status(200).send("Evaluation deleted succesfully");
+  } catch (e) {
+    next(e);
+  }
 }
