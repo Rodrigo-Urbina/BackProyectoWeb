@@ -156,3 +156,66 @@ exports.postComment = async function(req, res, next) {
     next(e);
   }
 }
+
+exports.ofTeacher = async function(req, res, next) {
+  try {
+    if (Object.keys(req.body).length === 0 || !req.body.from || !req.body.to) {
+      throw {status: 422, message:'Request body is missing some parameters (example: {from: date, to: date})'};
+    }
+
+    let tutorings;
+    tutorings = await tutoringService.ofTeacher({
+      teacher: req.params.id,
+      from: req.body.from,
+      to: req.body.to
+    });
+
+    return res.status(200).send(tutorings);
+  } catch (e) {
+    next(e);
+  }
+}
+
+exports.myPast = async function(req, res, next) {
+  try {
+
+    let params = {
+      datetime: new Date()
+    };
+
+    if (req.token.role == 2) {
+      params.teacher = req.token.id;
+    } else {
+      params.student = req.token.id;
+    }
+
+    let tutorings = [];
+    tutorings = await tutoringService.myTutorings(params, 'p'); //past
+
+    return res.status(200).send(tutorings);
+  } catch (e) {
+    next(e);
+  }
+}
+
+exports.myUpcoming = async function(req, res, next) {
+  try {
+
+    let params = {
+      datetime: new Date()
+    };
+
+    if (req.token.role == 2) {
+      params.teacher = req.token.id;
+    } else {
+      params.student = req.token.id;
+    }
+
+    let tutorings = [];
+    tutorings = await tutoringService.myTutorings(params, 'u'); //upcoming
+
+    return res.status(200).send(tutorings);
+  } catch (e) {
+    next(e);
+  }
+}

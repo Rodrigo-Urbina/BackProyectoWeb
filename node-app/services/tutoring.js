@@ -50,3 +50,23 @@ exports.delete = async function(id) {
     throw {status: 500, message:'Internal Server Error'};
   }
 }
+
+exports.ofTeacher = async function(params) {
+  let {error, results, fields} = await tutoringModel.ofTeacher(params);
+
+  if (error) {
+    throw {status: 500, message:'Internal Server Error'};
+  }
+
+  return results;
+}
+
+exports.myTutorings = async function(params, type) {
+  let {error, results, fields} = await tutoringModel.myTutorings(params, type);
+
+  if (error) {
+    throw {status: 500, message:'Internal Server Error'};
+  }
+
+  return results;
+}

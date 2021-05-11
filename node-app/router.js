@@ -6,8 +6,7 @@ const { hashPassword } = require('./middleware/passwordHash');
 const userController = require('./controllers/user');
 const evaluationController = require('./controllers/evaluation');
 const tutoringController = require('./controllers/tutoring');
-const { isAdmin } = require('./middleware/isAdmin');
-const { isStudent } = require('./middleware/isStudent');
+const { isAdmin, isTeacher, isStudent } = require('./middleware/utility');
 
 // initialize router
 const router = express.Router();
@@ -45,6 +44,14 @@ router.get('/evaluation', [authenticateToken], (req, res, next) => evaluationCon
 // Tutoring routes
 // Create
 router.post('/tutoring', [authenticateToken, isStudent], (req, res, next) => tutoringController.create(req, res, next));
+// Read
+router.get('/tutoring', [authenticateToken, isAdmin], (req, res, next) => tutoringController.find(req, res, next));
+// Read list of tutorings for a given teacher (to see if when a user can appoint a new tutoring) (to fill the calendar)
+router.get('/tutoring/teacher/:id', [authenticateToken, isStudent], (req, res, next) => tutoringController.ofTeacher(req, res, next));
+// Read list of a user's past tutorings
+router.get('/tutoring/myPast', [authenticateToken], (req, res, next) => tutoringController.myPast(req, res, next));
+// Read list of a user's upcoming tutorings
+router.get('/tutoring/myUpcoming', [authenticateToken], (req, res, next) => tutoringController.myUpcoming(req, res, next));
 // Detail
 router.get('/tutoring/detail/:id', [authenticateToken], (req, res, next) => tutoringController.detail(req, res, next));
 // Update

@@ -53,3 +53,47 @@ exports.delete = async function(id) {
     );
   });
 }
+
+exports.ofTeacher = async function(params) {
+  return new Promise(result => {
+    db.query(
+      "SELECT * FROM tutoring WHERE teacher = ? AND datetime >= ? AND datetime <= ?",
+      [params.teacher, params.from, params.to],
+      function (error, results, fields) {
+        result({error, results, fields});
+      }
+    );
+  });
+}
+
+// type may be 'p' for past, 'u' for upcoming or 'a' for all
+exports.myTutorings = async function(params, type) {
+
+  var query = "SELECT * FROM tutoring WHERE";
+
+  if (type == 'p') { // past
+    query += " datetime < ? AND"
+  } else if (type == 'u') { // upcoming
+    query += " datetime >= ? AND"
+  }
+
+  if (params.teacher) {
+    query += " teacher = ?";
+    params.user = params.teacher;
+  } else if (params.student) {
+    query += " student = ?";
+    params.user = params.student;
+  } else {
+    throw {status: 500, message: "Internal server error"};
+  }
+
+  return new Promise(result => {
+    db.query(
+      query,
+      [params.datetime, params.user],
+      function (error, results, fields) {
+        result({error, results, fields});
+      }
+    );
+  });
+}
