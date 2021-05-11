@@ -1,11 +1,12 @@
 // import libraries
 const express = require('express');
-var db = require('./db');
+const { upload } = require('./s3-bucket');
 const { authenticateToken } = require('./middleware/authJWT');
 const { hashPassword } = require('./middleware/passwordHash');
 const userController = require('./controllers/user');
 const evaluationController = require('./controllers/evaluation');
 const tutoringController = require('./controllers/tutoring');
+const uploadController = require('./controllers/uploadFiles');
 const { isAdmin, isTeacher, isStudent } = require('./middleware/utility');
 
 // initialize router
@@ -58,6 +59,10 @@ router.get('/tutoring/detail/:id', [authenticateToken], (req, res, next) => tuto
 router.put('/tutoring/:id', [authenticateToken], (req, res, next) => tutoringController.update(req, res, next));
 // Post comment
 router.post('/tutoring/:id/comment', [authenticateToken], (req, res, next) => tutoringController.postComment(req, res, next));
+
+
+// Upload files
+router.post('/upload', [authenticateToken, upload.array('file',1)], (req, res, next) => uploadController.upload(req, res, next));
 
 // Testing
 router.get('/test/user', [authenticateToken], (req, res, next) => {
