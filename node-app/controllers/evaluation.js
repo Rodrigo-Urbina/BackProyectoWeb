@@ -27,15 +27,12 @@ exports.find = async function(req, res, next) {
   }
 }
 
+// Evaluation controller
 exports.findOne = async function(req, res, next) {
   try {
     let params = (req.query) ? req.query : {};
     params.id = req.params.id;
     let evaluation = await evaluationService.findOne(params);
-
-    if (!evaluation) {
-      throw {status: 404, message:'Evaluation not found'};
-    }
 
     return res.status(200).send(evaluation);
   } catch (e) {

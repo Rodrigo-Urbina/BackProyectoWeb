@@ -5,7 +5,7 @@ exports.create = async function(data) {
   let {error, results, fields} = await evaluationModel.create(data);
   if (error) {
     if (error.errno == 1062) {
-      throw {status: 409, message:'User already exists'};
+      throw {status: 409, message:'Evaluation already exists'};
     }
     throw {status: 500, message:'Internal Server Error'};
   }
@@ -21,6 +21,7 @@ exports.find = async function(params) {
   return results;
 }
 
+// Evaluation service
 exports.findOne = async function(params) {
   const {error, results, fields} = await evaluationModel.read(params);
 
@@ -29,7 +30,7 @@ exports.findOne = async function(params) {
   }
 
   if (results.length == 0) {
-    throw {status: 404, message:'User not found'};
+    throw {status: 404, message:'Evaluation not found'};
   }
 
   return results[0];

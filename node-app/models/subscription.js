@@ -53,3 +53,20 @@ exports.delete = async function(id) {
     );
   });
 }
+
+exports.hasActiveSubscription = async function(user) {
+  let query = `SELECT SUM(NOW() between date_review and date_add(date_review, INTERVAL duration DAY)) as isActive
+               FROM subscription
+               JOIN subscriptionType
+               ON subscription.type = subscriptionType.id
+               WHERE user = ?`;
+  return new Promise(result => {
+    db.query(
+      query,
+      user,
+      function (error, results, fields) {
+        result({error, results, fields});
+      }
+    );
+  });
+}

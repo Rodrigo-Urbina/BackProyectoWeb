@@ -7,7 +7,8 @@ const userController = require('./controllers/user');
 const evaluationController = require('./controllers/evaluation');
 const tutoringController = require('./controllers/tutoring');
 const uploadController = require('./controllers/uploadFiles');
-const { isAdmin, isTeacher, isStudent } = require('./middleware/utility');
+const subscriptionController = require('./controllers/subscription')
+const { isAdmin, isTeacher, isStudent, isMinTeacher, isMinStudent } = require('./middleware/utility');
 
 // initialize router
 const router = express.Router();
@@ -31,10 +32,10 @@ router.put('/user/:id', [authenticateToken, isAdmin], (req, res, next) => userCo
 // Delete
 router.delete('/user/:id', [authenticateToken, isAdmin], (req, res, next) => userController.delete(req, res, next));
 // Find Teachers
-router.get('/teacher', [authenticateToken, isStudent], (req, res, next) => userController.findTeachers(req, res, next));
+router.get('/teacher', [authenticateToken, isMinStudent], (req, res, next) => userController.findTeachers(req, res, next));
 // Find One Teacher
 // Find Teachers
-router.get('/teacher/:id', [authenticateToken, isStudent], (req, res, next) => userController.teacherDetail(req, res, next));
+router.get('/teacher/:id', [authenticateToken, isMinStudent], (req, res, next) => userController.teacherDetail(req, res, next));
 
 
 // Evaluation routes
@@ -44,7 +45,7 @@ router.get('/evaluation', [authenticateToken], (req, res, next) => evaluationCon
 
 // Tutoring routes
 // Create
-router.post('/tutoring', [authenticateToken, isStudent], (req, res, next) => tutoringController.create(req, res, next));
+router.post('/tutoring', [authenticateToken, isMinStudent], (req, res, next) => tutoringController.create(req, res, next));
 // Read
 router.get('/tutoring', [authenticateToken, isAdmin], (req, res, next) => tutoringController.find(req, res, next));
 // Read list of tutorings for a given teacher (to see if when a user can appoint a new tutoring) (to fill the calendar)
@@ -60,6 +61,21 @@ router.put('/tutoring/:id', [authenticateToken], (req, res, next) => tutoringCon
 // Post comment
 router.post('/tutoring/:id/comment', [authenticateToken], (req, res, next) => tutoringController.postComment(req, res, next));
 
+
+// Subscription routes
+// Create
+router.post('/subscription', [authenticateToken, isAdmin], (req, res, next) => subscriptionController.create(req, res, next));
+// Read
+router.get('/subscription', [authenticateToken, isAdmin], (req, res, next) => subscriptionController.find(req, res, next));
+router.get('/subscription/:id', [authenticateToken, isAdmin], (req, res, next) => subscriptionController.findOne(req, res, next));
+// Update
+router.put('/subscription/:id', [authenticateToken, isAdmin], (req, res, next) => subscriptionController.update(req, res, next));
+// Delete
+router.delete('/subscription/:id', [authenticateToken, isAdmin], (req, res, next) => subscriptionController.delete(req, res, next));
+// Apply for subscription
+router.post('/subscription-application', [authenticateToken, isStudent], (req, res, next) => subscriptionController.apply(req, res, next));
+// Review subscription
+router.put('/subscription-review/:id', [authenticateToken, isAdmin], (req, res, next) => subscriptionController.review(req, res, next));
 
 // Upload files
 router.post('/upload', [authenticateToken, upload.array('file',1)], (req, res, next) => uploadController.upload(req, res, next));
