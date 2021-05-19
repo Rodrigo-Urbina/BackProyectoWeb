@@ -54,7 +54,7 @@ exports.delete = async function(id) {
   });
 }
 
-exports.hasActiveSubscription = async function(user) {
+exports.hasActiveSubscription = async function(userID) {
   let query = `SELECT SUM(NOW() between date_review and date_add(date_review, INTERVAL duration DAY)) as isActive
                FROM subscription
                JOIN subscriptionType
@@ -63,7 +63,25 @@ exports.hasActiveSubscription = async function(user) {
   return new Promise(result => {
     db.query(
       query,
-      user,
+      userID,
+      function (error, results, fields) {
+        result({error, results, fields});
+      }
+    );
+  });
+}
+
+exports.myCurrentSubscription = async function(userID) {
+  let query = `SELECT s.id, s.user, s.type, s.date_request, s.date_review, s.status, st.name, st.description, st.duration, st.price
+               FROM subscription as s
+               JOIN subscriptionType as st
+               ON s.type = st.id
+               WHERE s.user = ? AND s.status = 'a' AND NOW() >= s.date_review AND NOW() <= date_add(s.date_review, INTERVAL st.duration DAY)
+               ORDER BY s.date_review DESC;`;
+  return new Promise(result => {
+    db.query(
+      query,
+      userID,
       function (error, results, fields) {
         result({error, results, fields});
       }

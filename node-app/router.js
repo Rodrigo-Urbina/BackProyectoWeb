@@ -76,6 +76,8 @@ router.delete('/subscription/:id', [authenticateToken, isAdmin], (req, res, next
 router.post('/subscription-application', [authenticateToken, isStudent], (req, res, next) => subscriptionController.apply(req, res, next));
 // Review subscription
 router.put('/subscription-review/:id', [authenticateToken, isAdmin], (req, res, next) => subscriptionController.review(req, res, next));
+// View my current subscription (as user)
+router.get('/mySubscription', [authenticateToken, isStudent], (req, res, next) => subscriptionController.mySubscription(req, res, next));
 
 // Upload files
 router.post('/upload', [authenticateToken, upload.array('file',1)], (req, res, next) => uploadController.upload(req, res, next));

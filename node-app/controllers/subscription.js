@@ -110,3 +110,18 @@ exports.review = async function(req, res, next) {
     next(e);
   }
 }
+
+// ToDo: complete
+exports.mySubscription = async function(req, res, next) {
+  try {
+
+    const id = req.token.id;
+
+    let subscription = await subscriptionService.myCurrentSubscription(id);
+
+    return res.status(200).send(subscription);
+    //return res.status(200).send("Route is working");
+  } catch (e) {
+    next(e);
+  }
+}

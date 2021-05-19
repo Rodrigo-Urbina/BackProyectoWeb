@@ -51,12 +51,26 @@ exports.delete = async function(id) {
   }
 }
 
-exports.hasActiveSubscription = async function(user) {
-  let {error, results, fields} = await subscriptionModel.hasActiveSubscription(user);
+exports.hasActiveSubscription = async function(userID) {
+  let {error, results, fields} = await subscriptionModel.hasActiveSubscription(userID);
 
   if (error) {
     throw {status: 500, message:'Internal Server Error'};
   }
 
   return results[0].isActive;
+}
+
+exports.myCurrentSubscription = async function(userID) {
+  let {error, results, fields} = await subscriptionModel.myCurrentSubscription(userID);
+
+  if (error) {
+    throw {status: 500, message:'Internal Server Error'};
+  }
+
+  if (results.length == 0) {
+    return null;
+  }
+
+  return results[0];
 }
