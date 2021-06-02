@@ -1,7 +1,7 @@
 // import libraries
 const express = require('express');
 const { upload } = require('./s3-bucket');
-const { authenticateToken } = require('./middleware/authJWT');
+const { authenticateToken } = require('./middleware/authJwt');
 const { hashPassword } = require('./middleware/passwordHash');
 const userController = require('./controllers/user');
 const evaluationController = require('./controllers/evaluation');
@@ -9,6 +9,13 @@ const tutoringController = require('./controllers/tutoring');
 const uploadController = require('./controllers/uploadFiles');
 const subscriptionController = require('./controllers/subscription')
 const { isAdmin, isTeacher, isStudent, isMinTeacher, isMinStudent } = require('./middleware/utility');
+
+const asyncHandler = (next, fn) => {
+    console.log("AsyncHandler");
+    return Promise
+        .resolve(fn(req, res, next))
+        .catch(next);
+};
 
 // initialize router
 const router = express.Router();
@@ -19,6 +26,7 @@ router.get('/', (req, res) => {
 
 // AUTHENTICATION
 router.post('/auth/signin', (req, res, next) => userController.signin(req, res, next));
+//router.post('/auth/signin', (req, res, next) => asyncHandler(req, res, next, userController.signin));
 router.post('/auth/signup', [hashPassword], (req, res, next) => userController.create(req, res, next));
 
 // User routes
@@ -32,10 +40,10 @@ router.put('/user/:id', [authenticateToken, isAdmin], (req, res, next) => userCo
 // Delete
 router.delete('/user/:id', [authenticateToken, isAdmin], (req, res, next) => userController.delete(req, res, next));
 // Find Teachers
-router.get('/teacher', [authenticateToken, isMinStudent], (req, res, next) => userController.findTeachers(req, res, next));
+router.get('/teacher', [authenticateToken, isStudent], (req, res, next) => userController.findTeachers(req, res, next));
 // Find One Teacher
 // Find Teachers
-router.get('/teacher/:id', [authenticateToken, isMinStudent], (req, res, next) => userController.teacherDetail(req, res, next));
+router.get('/teacher/:id', [authenticateToken, isStudent], (req, res, next) => userController.teacherDetail(req, res, next));
 
 
 // Evaluation routes
