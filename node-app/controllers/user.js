@@ -76,27 +76,34 @@ exports.delete = async function(req, res, next) {
 
 
 exports.signin = async function(req, res, next) {
-  console.log("HERE");
+  try {
   let user = await userService.findOne({email: req.body.email});
 
   if (user) {
     bcrypt.compare(req.body.password, user.password, function (err, result) {
-      if (result && user.confirmed && !user.blocked) {
-        return res.status(200).send({
-          jwt: generateToken({
-            id: user.id,
-            email: user.email,
-            name_first: user.name_first,
-            name_last: user.name_last,
-            role: user.role
-          })
-        });
-      } else {
-        throw {status: 401, message:'Unauthorized'};
+      try {
+        if (result && user.confirmed && !user.blocked) {
+          return res.status(200).send({
+            jwt: generateToken({
+              id: user.id,
+              email: user.email,
+              name_first: user.name_first,
+              name_last: user.name_last,
+              role: user.role
+            })
+          });
+        } else {
+          next({status: 401, message:'Unauthorized'});
+        }
+      } catch (e) {
+        next (e);
       }
     });
   } else {
     throw {status: 401, message:'Unauthorized'};
+  }
+  } catch (e) {
+    next(e);
   }
 }
 
