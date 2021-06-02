@@ -2,7 +2,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 var db = require("../db");
-const { generateToken } = require("../services/authJWT");
+const { generateToken } = require("../services/authJwt");
 const userService = require("../services/user");
 const evaluationService = require("../services/evaluation");
 const subjectService = require("../services/subject");
